@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +16,7 @@ import com.boot.restclient.json.Response;
 
 @Service
 public class GeocoderService {
+	private Logger logger = LoggerFactory.getLogger(GeocoderService.class);
 	private RestTemplate template;
 	
 	private static final String BASE = "https://maps.googleapis.com/maps/api/geocode/json";
@@ -38,8 +41,12 @@ public class GeocoderService {
 	            .collect(Collectors.joining(","));
 	    String url = String.format("%s?address=%s&key=%s", BASE, encodedAddress, KEY);
 	    Response response = template.getForObject(url, Response.class);
-	    return new Site(response.getFormattedAddress(),
+	    Site site = new Site(response.getFormattedAddress(),
 	            response.getLocation().getLat(),
 	            response.getLocation().getLng());
+	    logger.info(site.toString());
+	    return site;
 	}
+	
+	
 }
